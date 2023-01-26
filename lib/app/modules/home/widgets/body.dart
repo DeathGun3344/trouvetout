@@ -21,7 +21,7 @@ class Body extends GetView<HomeController> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          buildHeaderBody(title: "Vente", description: "Super vente"),
+          buildHeaderBody(title: "Top 10", description: "Meilleurs Ventes"),
 
           const SizedBox(
             height: 20,
@@ -55,7 +55,7 @@ class Body extends GetView<HomeController> {
           const SizedBox(
             height: 30,
           ),
-          buildHeaderBody(title: "Nouveau", description: "Recement ajouté"),
+          buildHeaderBody(title: "Nouveaux", description: "Recement ajouté"),
 
           const SizedBox(
             height: 20,

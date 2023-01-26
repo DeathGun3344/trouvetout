@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/data/models/user.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
+import 'package:trouvetout/app/modules/base/controllers/base_controller.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
 
 import '../controllers/personal_controller.dart';
@@ -78,7 +79,11 @@ class PersonalView extends GetView<PersonalController> {
                     content: const Text("Cliquez sur OK pour vous deconnecter"),
                     textConfirm: "OK",
                     textCancel: "Fermer",
-                    onConfirm: service.logout
+                    onConfirm: () {
+                      service.logout();
+                      Get.back();
+                      Get.find<BaseController>().index(0);
+                    }
                   );
                 }),
               ],

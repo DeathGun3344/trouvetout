@@ -18,9 +18,9 @@ class CartService extends GetxService {
   }
 
   Future<void> init() async {
-    cart.add(Cart(
+    /*cart.add(Cart(
         product: Product(id: 1, name: "name", rating: 0, comments: 0, description: "description", price: 500, categories: ["cat"], regularPrice: 1500, images: ['images'])
-    ));
+    ));*/
     //TODO: Synchroniser les produits locaux avec ceux en ligne pour eviter qu'ils soient trop obsolete vis a vis des prix
   }
 

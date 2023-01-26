@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_colors.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
+import 'package:trouvetout/app/data/services/auth_service.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
 
 import '../controllers/login_controller.dart';
@@ -58,6 +59,13 @@ class LoginView extends GetView<LoginController> {
                           ]),
                       child: TextFormField(
                         controller: controller.email,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (String? email) {
+                          if(email == null || !GetUtils.isEmail(email)) {
+                            return 'Veuillez saisir un mail correct';
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           labelText: "Email",
@@ -94,7 +102,7 @@ class LoginView extends GetView<LoginController> {
                             obscureText: controller.show(),
                             validator: (String? password) {
                               if (password == null || password.length < 6) {
-                                return '06 caractères minimum';
+                                return 'Veuillez saisir 06 caractères minimum';
                               }
                               return null;
                             },
@@ -123,18 +131,6 @@ class LoginView extends GetView<LoginController> {
                     const SizedBox(
                       height: 25,
                     ),
-                    /*GestureDetector(
-                    onTap: ()=> null, //Navigator.pushNamed(context, ForgotPassScreens),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        "Mot de passe oublié?",
-                        style: AppFont.medium.copyWith(
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),*/
                     const SizedBox(
                       height: 25,
                     ),
@@ -149,9 +145,10 @@ class LoginView extends GetView<LoginController> {
                           ),
                         ),
                         onPressed: () {
-                          /*authViewModel
-                          .login()
-                          .then((value) => Navigator.pop(context));*/
+                          Get.showOverlay(
+                              asyncFunction: controller.submit,
+                            loadingWidget: const Center(child: CircularProgressIndicator(),)
+                          );
                         },
                         child: Text(
                           "Connnexion".toUpperCase(),
@@ -162,8 +159,11 @@ class LoginView extends GetView<LoginController> {
                     ),
                     const Spacer(),
                     InkWell(
-                      onTap: () {
-                        Get.toNamed(Routes.REGISTER);
+                      onTap: () async {
+                        await Get.toNamed(Routes.REGISTER);
+                        if(Get.find<AuthService>().isAuth) {
+                          controller.next();
+                        }
                       },
                       child: Center(
                           child: RichText(

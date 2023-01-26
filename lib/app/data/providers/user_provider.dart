@@ -17,6 +17,14 @@ class UserProvider extends BaseProvider {
     );
   }
 
+  Future<User> login({required String email, required String password}) async {
+    return await auth();
+  }
+
+  Future<User> register({required String email, required String password, required String name}) async {
+    return await auth();
+  }
+
   Future<void> address() async {
 
   }

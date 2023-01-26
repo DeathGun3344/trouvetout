@@ -28,6 +28,14 @@ class AuthService extends GetxService {
     //isAnonymous = true;
   }
 
+  void login({required User user}) {
+    _user(user);
+    final Rxn<Address> address = Get.find<AddressService>().address;
+    if(address() == null) {
+      address(user.address);
+    }
+  }
+
   void logout() {
     _user.value = null;
     Get.find<CartService>().cart.clear();

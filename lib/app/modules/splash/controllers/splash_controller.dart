@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
+import 'package:trouvetout/app/data/services/category_service.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
 
 class SplashController extends GetxController {
@@ -16,7 +17,8 @@ class SplashController extends GetxController {
   Future<void> load() async {
     await Future.wait([
       service.auth(),
-      Get.find<CartService>().init()
+      Get.find<CartService>().init(),
+      Get.find<CategoryService>().init(),
     ]);
 
     if(service.isAuth || service.isAnonymous) {

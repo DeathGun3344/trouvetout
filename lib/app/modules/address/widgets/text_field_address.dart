@@ -5,9 +5,10 @@ class TextFieldAddress extends StatelessWidget {
   final TextEditingController textEditingController;
   final String lableText;
   final TextInputType type;
+  final bool obscure;
 
   const TextFieldAddress(
-      {Key? key, required this.textEditingController, required this.lableText, this.type = TextInputType.text})
+      {Key? key, required this.textEditingController, this.obscure = false, required this.lableText, this.type = TextInputType.text})
       : super(key: key);
 
   @override
@@ -27,6 +28,7 @@ class TextFieldAddress extends StatelessWidget {
             ),
           ]),
       child: TextFormField(
+        obscureText: obscure,
         controller: textEditingController,
         keyboardType: type,
         validator: (String? val) {

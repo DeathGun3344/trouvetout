@@ -11,6 +11,7 @@ import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/core/utils/format.dart';
 import 'package:trouvetout/app/data/models/product.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
+import 'package:trouvetout/app/modules/base/controllers/base_controller.dart';
 
 import '../controllers/detail_controller.dart';
 
@@ -41,7 +42,10 @@ class DetailView extends GetView<DetailController> {
         ),
         actions: [
           IconButton(
-              onPressed: Get.back,
+              onPressed: () {
+                Get.back();
+                Get.find<BaseController>().index(2);
+              },
               icon: Badge(
                 badgeStyle: const BadgeStyle(
                   badgeColor: AppColors.primaryColorYellow,

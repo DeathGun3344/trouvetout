@@ -9,16 +9,18 @@ import '../controllers/home_controller.dart';
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Header(),
-            const SizedBox(
-              height: 20,
-            ),
-            Body(),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Header(),
+              const SizedBox(
+                height: 20,
+              ),
+              Body(),
+            ],
+          ),
         ),
       ),
     );
