@@ -1,14 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/models/order.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/core/utils/format.dart';
-import 'package:trouvetout/app/data/models/order.dart';
-import 'package:trouvetout/app/data/models/order_item.dart';
+import 'package:trouvetout/app/modules/orders/widget/order_image.dart';
 
 class Detail extends StatelessWidget {
 
-  final Order order;
+  final WooOrder order;
 
   Detail({required this.order});
 
@@ -45,7 +46,7 @@ class Detail extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  Format.date(order.createdAt),
+                  Format.date(DateTime.parse(order.dateCreated!)),
                   style: AppFont.regular
                       .copyWith(color: Colors.grey, fontSize: 14),
                 ),
@@ -55,18 +56,18 @@ class Detail extends StatelessWidget {
               height: 20,
             ),
             Text(
-              '${order.items.length} articles',
+              '${order.lineItems!.length} articles',
               style: AppFont.medium.copyWith(color: Colors.black, fontSize: 14),
             ),
             const SizedBox(
               height: 20,
             ),
             ListView.builder(
-              itemCount: order.items.length,
+              itemCount: order.lineItems!.length,
               shrinkWrap: true,
               padding: const EdgeInsets.all(0.0),
               itemBuilder: (_, index) {
-                OrderItem item = order.items[index];
+                LineItems item = order.lineItems![index];
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -88,17 +89,18 @@ class Detail extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
+                          width: 100,
+                          height: 100,
+                          decoration: const BoxDecoration(
                             image: DecorationImage(
-                                image: CachedNetworkImageProvider(item.image),
+                                image: CachedNetworkImageProvider("item.image"),
                                 fit: BoxFit.cover
                             ),
-                            borderRadius: const BorderRadius.only(
+                            borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(8),
                                 bottomLeft: Radius.circular(8)),
                           ),
+                          child: OrderImage(order: order),
                         ),
                         Expanded(
                           child: Padding(
@@ -109,19 +111,9 @@ class Detail extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  item.name,
+                                  item.name!,
                                   style: AppFont.semiBold.copyWith(
                                       color: Colors.black, fontSize: 16),
-                                ),
-                                const SizedBox(
-                                  height: 9,
-                                ),
-                                Text(
-                                  'Mango',
-                                  style: AppFont.medium.copyWith(
-                                      color: Colors.grey,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w400),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -157,7 +149,7 @@ class Detail extends StatelessWidget {
                                     Align(
                                       alignment: Alignment.bottomRight,
                                       child: Text(
-                                        Format.money(item.total),
+                                        Format.money(int.parse(item.total ?? "0")),
                                         textAlign: TextAlign.right,
                                         style: AppFont.medium.copyWith(
                                           fontSize: 13,
@@ -191,11 +183,11 @@ class Detail extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            buildOrderInformation(title: "Adresse", description: order.shipping),
+            buildOrderInformation(title: "Adresse", description: order.shipping!.address1!),
             const SizedBox(
               height: 25,
             ),
-            buildOrderInformation(title: "Total", description: Format.money(order.total)),
+            buildOrderInformation(title: "Total", description: Format.money(int.parse(order.total ?? "0"))),
 
           ],
         ),

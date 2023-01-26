@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:trouvetout/app/core/const/app_colors.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/core/utils/format.dart';
-import 'package:trouvetout/app/data/models/order.dart';
+import 'package:trouvetout/app/data/providers/product_provider.dart';
 import 'package:trouvetout/app/modules/orders/widget/detail.dart';
+import 'package:trouvetout/app/modules/orders/widget/order_image.dart';
 
 import '../controllers/orders_controller.dart';
 
@@ -47,7 +50,7 @@ class OrdersView extends GetView<OrdersController> {
                 (orders) => ListView.builder(
                   itemCount: orders!.length,
                   itemBuilder: (_, index) {
-                    Order order = orders[index];
+                    WooOrder order = orders[index];
                     return Padding(
                         padding: const EdgeInsets.only(bottom: 20),
                         child: InkWell(
@@ -71,18 +74,10 @@ class OrdersView extends GetView<OrdersController> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
+                                  SizedBox(
                                     width: 100,
                                     height: 100,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: CachedNetworkImageProvider(
-                                              order.items.first.image),
-                                          fit: BoxFit.cover),
-                                      borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(8),
-                                          bottomLeft: Radius.circular(8)),
-                                    ),
+                                    child: OrderImage(order: order),
                                   ),
                                   const SizedBox(
                                     width: 5,
@@ -97,7 +92,7 @@ class OrdersView extends GetView<OrdersController> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            order.items.first.name,
+                                            order.lineItems?.first.name ?? "",
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: AppFont.bold.copyWith(
@@ -121,7 +116,9 @@ class OrdersView extends GetView<OrdersController> {
                                                         ),
                                                         children: [
                                                           TextSpan(
-                                                            text: order.quantity
+                                                            text: order
+                                                                .lineItems!
+                                                                .length
                                                                 .toString(),
                                                             style: AppFont
                                                                 .semiBold
@@ -149,7 +146,9 @@ class OrdersView extends GetView<OrdersController> {
                                                         children: [
                                                           TextSpan(
                                                             text: Format.money(
-                                                                order.total),
+                                                                int.parse(order
+                                                                        .total ??
+                                                                    '0')),
                                                             style: AppFont
                                                                 .semiBold
                                                                 .copyWith(
@@ -169,10 +168,12 @@ class OrdersView extends GetView<OrdersController> {
                                             height: 10,
                                           ),
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Text(
-                                                Format.date(order.createdAt),
+                                                Format.date(DateTime.parse(
+                                                    order.dateCreated!)),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: AppFont.regular.copyWith(
@@ -182,15 +183,20 @@ class OrdersView extends GetView<OrdersController> {
                                                 ),
                                               ),
                                               Card(
-                                                color: AppColors.primaryColorYellow,
-                                                child: Container(
-                                                  padding: const EdgeInsets.all(5),
-                                                  child: Text(order.state, style: const TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold
-                                                  )),
-                                                )
-                                              )
+                                                  color: AppColors
+                                                      .primaryColorYellow,
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(5),
+                                                    child: Text(
+                                                        Format.state(
+                                                            order.status),
+                                                        style: const TextStyle(
+                                                            fontSize: 10,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold)),
+                                                  ))
                                             ],
                                           )
                                         ],

@@ -1,44 +1,51 @@
 
+import 'package:flutter_wp_woocommerce/models/customer.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
-import 'package:trouvetout/app/data/models/address.dart';
-import 'package:trouvetout/app/data/models/user.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:trouvetout/app/data/providers/user_provider.dart';
 import 'package:trouvetout/app/data/services/address_service.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
 
 class AuthService extends GetxService {
 
-  final Rxn<User> _user = Rxn<User>();
-  User? get user => _user();
+  int id = 0;
+  final Rxn<WooCustomer> _user = Rxn<WooCustomer>();
+  WooCustomer? get user => _user();
   bool get isAuth => _user() != null;
-  bool get isAnonymous => true;
+  bool get isAnonymous => GetStorage().hasData('anonymous');
   final UserProvider provider = Get.find();
 
   Future<void> auth() async {
-    await Future.delayed(const Duration(seconds: 1));
-    if(false) {
+    if(!(await Get.find<WooCommerce>().isCustomerLoggedIn())) {
       return;
     }
-    final User user = await provider.auth();
-    _user(user);
-    Get.find<AddressService>().address(user.address);
+    id = (await provider.id())!;
+    final WooCustomer user = await provider.auth(
+      id: id
+    );
+    await login(user: user);
   }
 
   Future<void> anonymous() async {
-    //isAnonymous = true;
+    await GetStorage().write('anonymous', true);
   }
 
-  void login({required User user}) {
+  Future<void> login({required WooCustomer user}) async {
+    id = user.id!;
     _user(user);
-    final Rxn<Address> address = Get.find<AddressService>().address;
+    final Rxn<Billing> address = Get.find<AddressService>().address;
     if(address() == null) {
-      address(user.address);
+      address(user.billing);
     }
+    await Get.find<CartService>().init();
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await Get.find<WooCommerce>().logUserOut();
+    id = 0;
     _user.value = null;
-    Get.find<CartService>().cart.clear();
+    Get.find<CartService>().clear();
     Get.find<AddressService>().address.value = null;
   }
 }

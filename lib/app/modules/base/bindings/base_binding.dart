@@ -15,8 +15,6 @@ class BaseBinding extends Bindings {
     Get.lazyPut<ProductsController>(
           () => ProductsController(),
     );
-    Get.lazyPut<CartController>(
-          () => CartController(),
-    );
+    Get.put<CartController>(CartController(), permanent: true);
   }
 }

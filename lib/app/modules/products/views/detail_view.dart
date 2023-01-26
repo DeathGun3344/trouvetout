@@ -4,12 +4,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:trouvetout/app/core/const/app_colors.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/core/utils/format.dart';
-import 'package:trouvetout/app/data/models/product.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
 import 'package:trouvetout/app/modules/base/controllers/base_controller.dart';
 
@@ -17,7 +18,7 @@ import '../controllers/detail_controller.dart';
 
 class DetailView extends GetView<DetailController> {
 
-  final Product product = Get.arguments;
+  final WooProduct product = Get.arguments;
   final CartService service = Get.find();
 
   @override
@@ -37,7 +38,7 @@ class DetailView extends GetView<DetailController> {
         ),
         backgroundColor: Colors.white,
         title: Text(
-          product.name,
+          product.name ?? "",
           style: AppFont.semiBold,
         ),
         actions: [
@@ -51,7 +52,7 @@ class DetailView extends GetView<DetailController> {
                   badgeColor: AppColors.primaryColorYellow,
                 ),
                 badgeContent: Obx(() {
-                  return Text(service.cart.length.toString(), style: AppFont.regular.copyWith(
+                  return Text("${service.cart().getCartItemCount()}", style: AppFont.regular.copyWith(
                       fontSize: 12,
                       color: Colors.white
                   ),);
@@ -74,7 +75,7 @@ class DetailView extends GetView<DetailController> {
               ),
               items: product.images
                   .map((e) => CachedNetworkImage(
-                fit: BoxFit.cover, imageUrl: e,
+                fit: BoxFit.cover, imageUrl: Format.image(e.src),
               ))
                   .toList(),
             ),
@@ -90,12 +91,12 @@ class DetailView extends GetView<DetailController> {
                     children: [
                       Expanded(
                         child: Text(
-                          product.name,
+                          product.name ?? "",
                           style: AppFont.bold.copyWith(fontSize: 23),
                         ),
                       ),
                       Text(
-                        Format.money(product.price),
+                        Format.money(int.parse(product.price ?? "0")),
                         style: AppFont.bold.copyWith(fontSize: 23),
                       ),
                     ],
@@ -104,7 +105,7 @@ class DetailView extends GetView<DetailController> {
                     height: 5,
                   ),
                   Text(
-                    product.categories.first,
+                    product.categories.first.name ?? "",
                     style: AppFont.regular.copyWith(
                         fontWeight: FontWeight.normal,
                         fontSize: 13,
@@ -119,7 +120,7 @@ class DetailView extends GetView<DetailController> {
                         initialRating: 5,
                         direction: Axis.horizontal,
                         itemSize: 15,
-                        itemCount: product.rating.ceil(),
+                        itemCount: double.parse(product.averageRating ?? '0').ceil(),
                         ignoreGestures: true,
                         itemBuilder: (context, _) => const Icon(
                           Icons.star,
@@ -132,15 +133,15 @@ class DetailView extends GetView<DetailController> {
                       const SizedBox(
                         width: 5,
                       ),
-                      if(product.comments > 0)
-                        Text('(${product.comments})')
+                      if((product.ratingCount ?? 0) > 0)
+                        Text('(${product.ratingCount})')
                     ],
                   ),
                   const SizedBox(
                     height: 15,
                   ),
                   HtmlWidget(
-                    product.description,
+                    product.description ?? "",
                     textStyle: AppFont.regular.copyWith(
                         fontWeight: FontWeight.w400,
                         fontSize: 15,
@@ -184,7 +185,22 @@ class DetailView extends GetView<DetailController> {
                   ),
                 ),
                 onPressed: () {
-                  service.toggle(product: product);
+                  Get.showOverlay(
+                      asyncFunction: () async {
+                        try {
+                          final bool check = service.check(product: product);
+                          if(check) {
+                            service.remove(product: product);
+                          } else {
+                            service.add(product: product);
+                          }
+                        } catch(e) {
+                          Logger().e(e);
+                          Get.snackbar('Erreur', 'Une erreur est survenue');
+                        }
+                      },
+                    loadingWidget: const Center(child: CircularProgressIndicator(),)
+                  );
                 },
                 child: Obx(() {
                   final bool check = service.check(product: product);

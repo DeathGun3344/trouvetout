@@ -17,7 +17,6 @@ class SplashController extends GetxController {
   Future<void> load() async {
     await Future.wait([
       service.auth(),
-      Get.find<CartService>().init(),
       Get.find<CategoryService>().init(),
     ]);
 

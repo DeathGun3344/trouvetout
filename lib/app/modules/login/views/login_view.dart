@@ -99,7 +99,7 @@ class LoginView extends GetView<LoginController> {
                         child: Obx(() {
                           return TextFormField(
                             controller: controller.password,
-                            obscureText: controller.show(),
+                            obscureText: !controller.show(),
                             validator: (String? password) {
                               if (password == null || password.length < 6) {
                                 return 'Veuillez saisir 06 caractères minimum';
@@ -113,8 +113,8 @@ class LoginView extends GetView<LoginController> {
                                 onPressed: controller.show.toggle,
                                 icon: Icon(
                                   controller.show()
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   size: 16,
                                 ),
                               ),

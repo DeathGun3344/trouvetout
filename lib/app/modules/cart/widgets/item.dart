@@ -1,17 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cart/model/cart_model.dart';
 import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
 import 'package:trouvetout/app/core/utils/format.dart';
-import 'package:trouvetout/app/data/models/cart.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
 
 class Item extends StatelessWidget {
   final CartService service = Get.find();
-  final int index;
-  final Cart cart;
+  final CartItem item;
 
-  Item({required this.index, required this.cart});
+  Item({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +25,7 @@ class Item extends StatelessWidget {
             height: 120,
             decoration: BoxDecoration(
               image: DecorationImage(
-                  image: CachedNetworkImageProvider(
-                      cart.product.images.first),
+                  image: CachedNetworkImageProvider(item.productDetails['image']),
                   fit: BoxFit.cover),
               borderRadius: BorderRadius.circular(5),
             ),
@@ -42,7 +40,7 @@ class Item extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    cart.product.name,
+                    item.productName ?? "",
                     overflow: TextOverflow.ellipsis,
                     style: AppFont.semiBold.copyWith(
                         color: Colors.black,
@@ -66,7 +64,7 @@ class Item extends StatelessWidget {
                             Expanded(
                               child: InkWell(
                                 onTap: (){
-                                  service.increase(index: index);
+                                  service.increment(product: item.productId);
                                 },
                                 child: const Icon(
                                   Icons.add,
@@ -74,10 +72,10 @@ class Item extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(cart.quantity.toString()),
+                            Text(item.quantity.toString()),
                             Expanded(child: InkWell(
                               onTap: (){
-                                service.decrease(index: index);
+                                service.decrement(product: item.productId);
                               },
                               child: const Icon(
                                 Icons.remove,
@@ -88,7 +86,7 @@ class Item extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Text(Format.money(cart.product.price))
+                      Text(Format.money(item.subTotal.toInt()))
                     ],
                   ),
                 ],

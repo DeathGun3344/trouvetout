@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/constants/constants.dart';
 import 'package:flutter_wp_woocommerce/woocommerce.dart';
 
 import 'package:get/get.dart';
@@ -10,7 +11,7 @@ import 'package:trouvetout/app/data/services/address_service.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
 import 'package:trouvetout/app/data/services/cart_service.dart';
 import 'package:trouvetout/app/data/services/category_service.dart';
-
+import 'package:get_storage/get_storage.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
@@ -31,6 +32,8 @@ void main() async {
 }
 
 Future<void> initServices() async {
+
+  await GetStorage.init();
 
   Get.put(WooCommerce(
       baseUrl: "https://www.trouvetout.net",

@@ -87,6 +87,7 @@ class AddressView extends GetView<AddressController> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        //TODO: Mettre a jour les villes
                         items: ["Abidjan", "Bouaké"]
                             .map((e) => DropdownMenuItem(
                                   value: e,

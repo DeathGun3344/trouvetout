@@ -1,62 +1,89 @@
-
+import 'package:flutter_cart/flutter_cart.dart';
+import 'package:flutter_cart/model/cart_model.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
-import 'package:trouvetout/app/data/models/address.dart';
-import 'package:trouvetout/app/data/models/cart.dart';
-import 'package:trouvetout/app/data/models/product.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:logger/logger.dart';
+import 'package:trouvetout/app/core/utils/format.dart';
+import 'package:trouvetout/app/data/providers/product_provider.dart';
 
 class CartService extends GetxService {
+  bool _isReady = false;
+  int get total => cart().getTotalAmount().toInt();
 
-  final RxList<Cart> cart = RxList<Cart>();
-  int get total {
-    int sum = 0;
+  late final Rx<FlutterCart> cart = FlutterCart().obs
+    ..listen((c) async {
+      if(!_isReady) {
+        return;
+      }
+      await GetStorage().remove("cart");
+      List<Map<String, int>> cart = [];
 
-    cart.forEach((c) {
-      sum += (c.quantity * c.product.price);
+      for (CartItem i in c.cartItem) {
+        cart.add({'id': i.productId, 'quantity': i.quantity});
+      }
+
+      await GetStorage().write("cart", cart);
     });
-
-    return sum;
-  }
+  final ProductProvider provider = Get.find();
 
   Future<void> init() async {
-    /*cart.add(Cart(
-        product: Product(id: 1, name: "name", rating: 0, comments: 0, description: "description", price: 500, categories: ["cat"], regularPrice: 1500, images: ['images'])
-    ));*/
-    //TODO: Synchroniser les produits locaux avec ceux en ligne pour eviter qu'ils soient trop obsolete vis a vis des prix
-  }
-
-  void toggle({required Product product}) {
-    if(check(product: product)) {
-      remove(product: product);
-    } else {
-      add(product: product);
+    List? cart = GetStorage().read("cart");
+    if (cart != null) {
+      await Future.wait(cart.map((c) async {
+        try {
+          WooProduct product = await provider.find(id: c['id']!);
+          update(product: product, quantity: c['quantity']!);
+        } catch (e) {
+          Logger().e(e);
+        }
+      }).toList());
+      _isReady = true;
+      this.cart.refresh();
     }
   }
 
-  void add({required Product product}) {
-    if(!check(product: product)) {
-      cart.add(Cart(product: product));
-    }
+  void add({required WooProduct product}) {
+    update(product: product, quantity: 1);
   }
 
-  void remove({required Product product}) {
-    cart.removeWhere((c) => c.product.id == product.id);
-  }
-
-  bool check({required Product product}) {
-    return cart.indexWhere((c) => c.product.id == product.id) != -1;
-  }
-
-  void increase({required int index}) {
-    cart[index].quantity++;
+  void remove({required WooProduct product}) {
+    cart().deleteItemFromCart(_index(product.id!));
     cart.refresh();
   }
 
-  void decrease({required int index}) {
-    cart[index].quantity--;
-    if(cart[index].quantity <= 0) {
-      cart.removeAt(index);
-    }
+  bool check({required WooProduct product}) {
+    return cart().cartItem.indexWhere((c) => c.productId == product.id) != -1;
+  }
+
+  void increment({required int product}) {
+    cart().incrementItemToCart(_index(product));
     cart.refresh();
   }
 
+  void decrement({required int product}) {
+    cart().decrementItemFromCart(_index(product));
+    cart.refresh();
+  }
+
+  void update(
+      {required WooProduct product, required int quantity}) {
+    cart().addToCart(
+        productId: product.id,
+        unitPrice: int.parse(product.price ?? "0"),
+        quantity: 1,
+        productDetailsObject: {
+          'image': Format.image(product.images.first.src)
+        });
+    cart.refresh();
+  }
+
+  void clear() {
+    cart().cartItem.clear();
+    cart.refresh();
+  }
+
+  int _index(int product) {
+    return cart().cartItem.indexWhere((c) => c.productId == product);
+  }
 }

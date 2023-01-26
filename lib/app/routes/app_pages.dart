@@ -34,7 +34,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.PRODUCTS,
-      page: () => const ProductsView(),
+      page: () => ProductsView(),
       binding: ProductsBinding(),
     ),
     GetPage(

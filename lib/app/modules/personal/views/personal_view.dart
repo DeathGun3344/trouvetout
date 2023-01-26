@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/models/customer.dart';
 
 import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
-import 'package:trouvetout/app/data/models/user.dart';
+import 'package:trouvetout/app/core/utils/format.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
 import 'package:trouvetout/app/modules/base/controllers/base_controller.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
@@ -13,7 +14,7 @@ import '../controllers/personal_controller.dart';
 class PersonalView extends GetView<PersonalController> {
 
   final AuthService service = Get.find();
-  late final User? user = service.user;
+  late final WooCustomer? user = service.user;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class PersonalView extends GetView<PersonalController> {
                 height: 70,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: CachedNetworkImageProvider(user?.avatar ?? ""),
+                      image: CachedNetworkImageProvider(Format.image(user?.avatarUrl)),
                       fit: BoxFit.cover
                   ),
                   shape: BoxShape.circle,
@@ -47,7 +48,7 @@ class PersonalView extends GetView<PersonalController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user?.name ?? "",
+                      user?.username ?? "",
                       style: AppFont.semiBold.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -79,8 +80,8 @@ class PersonalView extends GetView<PersonalController> {
                     content: const Text("Cliquez sur OK pour vous deconnecter"),
                     textConfirm: "OK",
                     textCancel: "Fermer",
-                    onConfirm: () {
-                      service.logout();
+                    onConfirm: () async {
+                      await service.logout();
                       Get.back();
                       Get.find<BaseController>().index(0);
                     }

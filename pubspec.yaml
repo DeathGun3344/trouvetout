@@ -8,17 +8,20 @@ environment:
 dependencies: 
   cupertino_icons: ^1.0.2
   get: 4.6.5
+  woocommerce_api: ^0.1.0
   flutter_wp_woocommerce: ^1.0.0
   get_storage: ^2.0.3
   flutter_svg: ^1.1.6
   carousel_slider: ^4.2.1
   retry: ^3.1.0
+#  filter_list: ^1.0.2
   flutter_rating_bar: ^4.0.1
   intl: ^0.18.0
   cached_network_image: ^3.2.3
   badges: ^3.0.1
   flutter_widget_from_html: ^0.9.1
   logger: ^1.1.0
+  flutter_cart: ^0.0.8
   flutter: 
     sdk: flutter
 

@@ -1,9 +1,7 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
 import 'package:trouvetout/app/core/const/app_font.dart';
-import 'package:trouvetout/app/data/models/product.dart';
 import 'package:trouvetout/app/modules/home/controllers/home_controller.dart';
 import 'package:trouvetout/app/modules/home/widgets/cart.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
@@ -39,7 +37,7 @@ class Body extends GetView<HomeController> {
                 padding: const EdgeInsets.all(0.0),
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (_,index){
-                  Product product = controller.popular()![index];
+                  WooProduct product = controller.popular()![index];
                   return InkWell(
                     onTap: (){
                       Get.toNamed(Routes.DETAIL, arguments: product);
@@ -73,7 +71,7 @@ class Body extends GetView<HomeController> {
                   padding: const EdgeInsets.all(0.0),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_,index){
-                    Product product = controller.newest()![index];
+                    WooProduct product = controller.newest()![index];
                     return InkWell(
                       onTap: (){
                         Get.toNamed(Routes.DETAIL, arguments: product);

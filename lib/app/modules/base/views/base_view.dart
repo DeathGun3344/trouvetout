@@ -20,7 +20,7 @@ class BaseView extends GetView<BaseController> {
         physics: const NeverScrollableScrollPhysics(),
         children: [
           HomeView(),
-          const ProductsView(),
+          ProductsView(),
           CartView(),
           PersonalView()
         ],

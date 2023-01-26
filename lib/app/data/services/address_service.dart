@@ -1,9 +1,8 @@
-
+import 'package:flutter_wp_woocommerce/models/customer.dart';
 import 'package:get/get.dart';
-import 'package:trouvetout/app/data/models/address.dart';
 
 class AddressService extends GetxService {
 
-  final Rxn<Address> address = Rxn();
+  final Rxn<Billing> address = Rxn();
 
 }

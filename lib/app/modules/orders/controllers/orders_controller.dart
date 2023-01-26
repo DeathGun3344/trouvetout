@@ -1,9 +1,10 @@
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
 import 'package:retry/retry.dart';
-import 'package:trouvetout/app/data/models/order.dart';
 import 'package:trouvetout/app/data/providers/order_provider.dart';
+import 'package:trouvetout/app/data/services/auth_service.dart';
 
-class OrdersController extends GetxController with StateMixin<List<Order>> {
+class OrdersController extends GetxController with StateMixin<List<WooOrder>> {
 
   @override
   void onReady() {
@@ -15,7 +16,9 @@ class OrdersController extends GetxController with StateMixin<List<Order>> {
 
     change(null, status: RxStatus.loading());
 
-    List<Order> orders = await retry(() => Get.find<OrderProvider>().retrieve());
+    List<WooOrder> orders = await retry(() => Get.find<OrderProvider>().retrieve(
+      id: Get.find<AuthService>().id
+    ));
 
     change(orders, status: RxStatus.success());
 

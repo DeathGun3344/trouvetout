@@ -1,32 +1,41 @@
-import 'package:trouvetout/app/data/models/address.dart';
-import 'package:trouvetout/app/data/models/user.dart';
+import 'package:flutter_wp_woocommerce/models/customer.dart';
 import 'package:trouvetout/app/data/providers/base_provider.dart';
 
 class UserProvider extends BaseProvider {
-
-  Future<User> auth() async {
-    return User(
-        email: 'florentin.yao.3344@gmail.com', firstname: 'Florentin', lastname: 'Yao', avatar: 'https://st3.depositphotos.com/1037987/15097/i/600/depositphotos_150975580-stock-photo-portrait-of-businesswoman-in-office.jpg',
-      address: Address(
-          firstname: 'Florentin',
-          lastname: 'Yao',
-          city: 'Abidjan',
-          address: 'Camp-Millitaire',
-          phone: '0787837592'
-      )
-    );
+  Future<int?> id() async {
+    return await api.fetchLoggedInUserId();
   }
 
-  Future<User> login({required String email, required String password}) async {
-    return await auth();
+  Future<WooCustomer> auth({required int id}) async {
+    return await api.getCustomerById(id: id);
   }
 
-  Future<User> register({required String email, required String password, required String name}) async {
-    return await auth();
+  Future<WooCustomer> login(
+      {required String email, required String password}) async {
+    return await api.loginCustomer(username: email, password: password);
   }
 
-  Future<void> address() async {
-
+  Future<WooCustomer> register(
+      {required String email,
+      required String password,
+      required String name}) async {
+    WooCustomer customer =
+        WooCustomer(username: name, password: password, email: email);
+    bool isOk = await api.createCustomer(customer);
+    if (isOk) {
+      return customer;
+    }
+    throw Exception();
   }
 
+  Future<WooCustomer> address(
+      {required int id, required Billing billing}) async {
+    return await api.updateCustomer(id: id, data: {
+      'billing': {
+        'phone': billing.phone,
+        'address_1': billing.address1,
+        'city': billing.city,
+      }
+    });
+  }
 }

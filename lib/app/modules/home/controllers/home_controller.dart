@@ -1,13 +1,13 @@
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
 import 'package:retry/retry.dart';
-import 'package:trouvetout/app/data/models/product.dart';
 import 'package:trouvetout/app/data/providers/product_provider.dart';
 
 class HomeController extends GetxController {
 
   final ProductProvider provider = Get.find();
-  final Rxn<List<Product>> newest = Rxn<List<Product>>();
-  final Rxn<List<Product>> popular = Rxn<List<Product>>();
+  final Rxn<List<WooProduct>> newest = Rxn<List<WooProduct>>();
+  final Rxn<List<WooProduct>> popular = Rxn<List<WooProduct>>();
 
   @override
   void onReady() {

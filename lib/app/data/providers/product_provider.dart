@@ -1,39 +1,45 @@
 import 'package:flutter_wp_woocommerce/woocommerce.dart';
-import 'package:logger/logger.dart';
-import 'package:trouvetout/app/data/models/product.dart';
 import 'package:trouvetout/app/data/providers/base_provider.dart';
 
 class ProductProvider extends BaseProvider {
 
-  final String base = "products?status=publish&type=simple&on_sale=true&stock_status=instock";
-
-  Future<List<Product>> retrieve() async {
-
-    var response = await api.getAsync(base);
-
-    return Product.fromList(response);
-
+  Future<WooProduct> find({required int id}) async {
+    return await api.getProductById(id: id);
   }
 
-  Future<List<Product>> popular() async {
-
-    WooCommerce api = WooCommerce(
-        baseUrl: "https://www.trouvetout.net",
-        consumerKey: "ck_77cb78d8487932744905b133d18ff849abee5277",
-        consumerSecret: "cs_bce2f244968750d2dd6ae9eb2dba38fc47f559e5");
-
-    List<WooProduct> products = await api2.getProducts();
-
-    var response = await api.getAsync("$base&per_page=10&orderby=popularity");
-
-    return Product.fromList(response);
+  Future<List<WooProduct>> retrieve({int page = 1, String? search, int? category, bool featured = false}) async {
+    return await api.getProducts(
+      perPage: 100,
+      page: page,
+      search: search?.isNotEmpty == true ? '$search' : null,
+      category: category != null ? '$category' : null,
+      featured: featured
+    );
   }
 
-  Future<List<Product>> newest() async {
+  Future<List<WooProduct>> popular() async {
 
-    var response = await api.getAsync("$base&per_page=10&orderby=date");
+    return await api.getProducts(
+      status: 'publish',
+      type: 'simple',
+      onSale: true,
+      stockStatus: 'instock',
 
-    return Product.fromList(response);
+      perPage: 10,
+      orderBy: 'popularity',
+    );
+  }
+
+  Future<List<WooProduct>> newest() async {
+    return await api.getProducts(
+      status: 'publish',
+      type: 'simple',
+      onSale: true,
+      stockStatus: 'instock',
+
+      perPage: 10,
+      orderBy: 'date',
+    );
   }
 
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/models/customer.dart';
 import 'package:get/get.dart';
 import 'package:retry/retry.dart';
-import 'package:trouvetout/app/data/models/address.dart';
 import 'package:trouvetout/app/data/providers/user_provider.dart';
 import 'package:trouvetout/app/data/services/address_service.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
@@ -23,10 +23,14 @@ class AddressController extends GetxController {
   }
 
   void load() {
-    if(!service.isAuth) {
-      return;
+    Billing? address = Get.find<AddressService>().address();
+    if(address != null) {
+      name.text = address.lastName ?? "";
+      phone.text = address.phone ?? "";
+      city(address.city);
+      this.address.text = address.address1 ?? "";
+
     }
-    name.text = service.user!.name;
   }
 
   Future<void> submit() async {
@@ -34,17 +38,16 @@ class AddressController extends GetxController {
       return;
     }
 
-    final Address address = Address(
-        firstname: "",
-        lastname: name.text,
+    final Billing address = Billing(
         city: city()!,
-        address: this.address.text,
-        phone: phone.text
+        address1: this.address.text,
+        phone: phone.text,
+      lastName: name.text
     );
 
     if(service.isAuth) {
-      retry(() => Get.find<UserProvider>().address());
-      service.user!.address = address;
+      retry(() => Get.find<UserProvider>().address(billing: address, id: service.id));
+      service.user!.billing = address;
     }
     Get.find<AddressService>().address(address);
 

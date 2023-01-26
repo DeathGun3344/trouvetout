@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_wp_woocommerce/woocommerce.dart';
 import 'package:get/get.dart';
-import 'package:trouvetout/app/data/models/user.dart';
 import 'package:trouvetout/app/data/providers/user_provider.dart';
 import 'package:trouvetout/app/data/services/auth_service.dart';
 import 'package:trouvetout/app/routes/app_pages.dart';
@@ -16,10 +16,17 @@ class LoginController extends GetxController {
     if(!form.currentState!.validate()) {
       return;
     }
-    await Future.delayed(const Duration(seconds: 3));
-    User user = await Get.find<UserProvider>().login(email: email.text, password: password.text);
-    Get.find<AuthService>().login(user: user);
-    next();
+
+    try {
+      WooCustomer user = await Get.find<UserProvider>().login(email: email.text, password: password.text);
+      await Get.find<AuthService>().login(user: user);
+      next();
+    } catch(e) {
+     Get.snackbar(
+         'Erreur',
+         'Identifiant incorrect'
+     );
+    }
   }
 
   void anonymous() async {
