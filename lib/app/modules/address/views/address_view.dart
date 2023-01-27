@@ -58,7 +58,8 @@ class AddressView extends GetView<AddressController> {
                   ),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(5),
@@ -72,7 +73,7 @@ class AddressView extends GetView<AddressController> {
                         ]),
                     child: DropdownButtonFormField(
                         validator: (String? val) {
-                          if(val == null || val.isEmpty) {
+                          if (val == null || val.isEmpty) {
                             return "Ce champs est requis";
                           }
                           return null;
@@ -87,8 +88,7 @@ class AddressView extends GetView<AddressController> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        //TODO: Mettre a jour les villes
-                        items: ["Abidjan", "Bouaké"]
+                        items: controller.cities
                             .map((e) => DropdownMenuItem(
                                   value: e,
                                   child: Text(e),

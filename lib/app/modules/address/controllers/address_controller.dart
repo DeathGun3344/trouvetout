@@ -15,10 +15,57 @@ class AddressController extends GetxController {
   final TextEditingController phone = TextEditingController();
   final TextEditingController address = TextEditingController();
   final RxnString city = RxnString();
+  final List<String> cities = [
+    "Abidjan",
+    "Bouaké",
+    "Daloa",
+    "Yamoussoukro",
+    "San-Pédro",
+    "Divo",
+    "Korhogo",
+    "Anyama",
+    "Abengourou",
+    "Man",
+    "Gagnoa",
+    "Soubré",
+    "Agboville",
+    "Dabou",
+    "Grand-Bassam",
+    "Bouaflé",
+    "Issia",
+    "Sinfra",
+    "Katiola",
+    "	Bingerville",
+    "Adzopé",
+    "Séguéla",
+    "Bondoukou",
+    "Oumé",
+    "Ferkessedougou",
+    "Dimbokro",
+    "Odienné",
+    "Duékoué",
+    "Danané",
+    "Tingréla",
+    "Guiglo",
+    "Boundiali",
+    "Agnibilékrou",
+    "Daoukro",
+    "Vavoua",
+    "Zuénoula",
+    "Tiassalé",
+    "Toumodi",
+    "Akoupé",
+    "Lakota",
+    "Bonon",
+    "Méagui",
+    "Zagné",
+    "Aboisso"
+  ];
 
   @override
   void onReady() {
     super.onReady();
+    cities.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     load();
   }
 
